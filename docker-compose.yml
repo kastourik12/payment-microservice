@@ -1,0 +1,68 @@
+version: '3.9'
+services:
+  app:
+    image: payment-microservice
+    container_name: payement-microservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgresdb
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=testDB
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgresdb
+      - GO_API_HOST=go-api
+      - GO_API_PORT=9090
+  payment-api:
+      image: paypal-api-v1
+      container_name: go-api
+      build:
+        context: ./go-payment
+        dockerfile: Dockerfile
+      ports:
+        - "9090:9090"
+      environment:
+        - PAYPAL_CLIENT_ID=
+        - PAYPAL_CLIENT_SECRET=
+        - PORT=9090
+
+
+
+  postgresdb:
+    image: postgres:13.1-alpine
+    container_name: postgresdb-payments
+    ports:
+      - "5432:5431"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=testDB
+      - POSTGRES_PORT=5432
+    volumes:
+      - postgresdb:/data/postgres
+      - ./docker_postgres_init.sql:/docker-entrypoint-initdb.d/docker_postgres_init.sql
+  pgadmin:
+    container_name: pgadmin-payments
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "82:80"
+    restart: unless-stopped
+    logging:
+      driver: "none"
+
+volumes:
+    postgresdb:
+    pgadmin:
+

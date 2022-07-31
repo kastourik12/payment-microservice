@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:test}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+go:
+  api:
+    host: ${GO_API_HOST:localhost}
+    port: ${GO_API_PORT:9090}
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
